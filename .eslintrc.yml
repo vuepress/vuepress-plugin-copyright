@@ -1,7 +1,6 @@
 root: true
 
 extends:
-  - plugin:jest/recommended
   - plugin:vue/essential
   - standard
 

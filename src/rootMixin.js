@@ -2,12 +2,6 @@ import Vue from 'vue'
 import Clipboard from '@clipboardComponent'
 import options from '@dynamic/copyright-options'
 
-const {
-  minLength = 0,
-  noSelect = false,
-  noCopy = false,
-} = options
-
 export default {
   data: () => ({
     isElement: false,
@@ -16,10 +10,10 @@ export default {
   created () {
     this.onCopy = (event) => {
       const textRange = getSelection().getRangeAt(0)
-      if (String(textRange).length < minLength) return
+      if (String(textRange).length < this.minLength) return
 
       event.preventDefault()
-      if (noCopy) return
+      if (this.noCopy) return
 
       const node = document.createElement('div')
       node.appendChild(getSelection().getRangeAt(0).cloneContents())
@@ -47,6 +41,18 @@ export default {
   watch: {
     isElement (value) {
       if (!value) return
+
+      let { copyright = !options.disabled } = this.$frontmatter
+      if (!copyright) return
+
+      if (typeof copyright !== 'object') {
+        copyright = {}
+      }
+
+      const noSelect = copyright.noSelect || options.noSelect
+      this.minLength = copyright.minLength || options.minLength
+      this.noCopy = copyright.noCopy || options.noCopy
+
       if (noSelect) {
         this.$el.style.userSelect = 'none'
       } else {

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <p>{{ text.beforeAuthor }}{{ authorName || text.author }}{{ text.afterAuthor }}<a :href="location">{{ location }}</a></p>
-    &#10;<div v-html="html"/>
+    <p>{{ text.beforeAuthor }}{{ authorName || text.author }}{{ text.afterAuthor }}<a :href="location">{{ decodeURIComponent(location) }}</a></p>
+&#10;<div v-html="html"/>
   </div>
 </template>
 
@@ -16,10 +16,18 @@ export default {
     lang: String,
   },
 
-  created() {
-    this.authorName = options.authorName
-    this.text = this.lang in i18n ? i18n[this.lang] : i18n['en-US']
-    this.location = window.location
+  created () {
+    this.authorName = typeof options.authorName === 'string'
+      ? options.authorName
+      : this.getI18nValue(options.authorName)
+    this.text = this.getI18nValue(i18n)
+    this.location = String(location).replace(/#.+$/, '')
+  },
+
+  methods: {
+    getI18nValue (source) {
+      return this.lang in source ? source[this.lang] : source['en-US']
+    },
   },
 }
 
